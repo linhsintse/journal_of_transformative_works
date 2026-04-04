@@ -70,40 +70,84 @@ function extractData(doc) {
 function renderAcademicPaper(data) {
     removeLoadingState();
 
-    const paperContainer = document.createElement('div');
-    paperContainer.id = 'academic-paper-wrapper';
+    // The Master Layout Container
+    const masterContainer = document.createElement('div');
+    masterContainer.id = 'academic-master-layout';
 
-    paperContainer.innerHTML = `
-        <header class="academic-header">
-            <div class="journal-branding">Archive of Our Own | Published: ${data.publishDate} | Words: ${data.wordCount}</div>
-            <h1 class="paper-title">${data.title}</h1>
-            <h2 class="paper-authors">${data.authors}</h2>
-        </header>
+    masterContainer.innerHTML = `
+        <nav class="academic-top-nav">
+            <div class="nav-content">
+                <div class="nav-brand">Journal of Transformative Works</div>
+                <ul class="nav-links">
+                    <li><a href="#">Browse Articles</a></li>
+                    <li><a href="#">Search Database</a></li>
+                    <li><a href="#">About the Journal</a></li>
+                </ul>
+            </div>
+        </nav>
 
-        ${data.summary ? `
-        <section class="academic-abstract">
-            <h3>Abstract</h3>
-            <div class="abstract-content">${data.summary}</div>
-            <p class="academic-keywords"><strong>Keywords:</strong> ${data.keywords}</p>
-        </section>` : ''}
+        <div class="academic-grid">
+            
+            <main id="academic-paper-wrapper">
+                <header class="academic-header">
+                    <h1 class="paper-title">${data.title}</h1>
+                    <h2 class="paper-authors">${data.authors}</h2>
+                    <div class="journal-branding">Published: ${data.publishDate} | Word Count: ${data.wordCount}</div>
+                </header>
 
-        <article class="academic-body">
-            ${data.text}
-        </article>
+                ${data.summary ? `
+                <section class="academic-abstract">
+                    <h3>Abstract</h3>
+                    <div class="abstract-content">${data.summary}</div>
+                    <div class="academic-keywords"><strong>Keywords:</strong> ${data.keywords}</div>
+                </section>` : ''}
 
-        ${data.notes ? `
-        <footer class="academic-appendix">
-            <h3>Appendix</h3>
-            <div class="appendix-content">${data.notes}</div>
-        </footer>` : ''}
+                <article class="academic-body">
+                    ${data.text}
+                </article>
+
+                ${data.notes ? `
+                <footer class="academic-appendix">
+                    <h3>Appendix / Notes</h3>
+                    <div class="appendix-content">${data.notes}</div>
+                </footer>` : ''}
+            </main>
+
+            <aside class="academic-sidebar">
+                <div class="sidebar-block primary-actions">
+                    <button class="action-btn download-btn">Download PDF</button>
+                    <button class="action-btn cite-btn">Cite this paper</button>
+                </div>
+
+                <div class="sidebar-block">
+                    <h4>Article Metrics</h4>
+                    <ul class="sidebar-links">
+                        <li><a href="#">Citations (0)</a></li>
+                        <li><a href="#">Altmetric Score</a></li>
+                        <li><a href="#">Accesses (Kudos)</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-block">
+                    <h4>Related Content</h4>
+                    <ul class="sidebar-links">
+                        <li><a href="#">Similar articles in this Fandom</a></li>
+                        <li><a href="#">Other works by these Authors</a></li>
+                        <li><a href="#">View Collection</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
     `;
 
+    // Hide the original AO3 layout
     const originalBody = document.querySelector('#outer');
     if (originalBody) {
         originalBody.style.display = 'none'; 
     }
     
-    document.body.appendChild(paperContainer);
+    // Inject the new layout
+    document.body.appendChild(masterContainer);
 }
 
 function isPageFormatted() {
