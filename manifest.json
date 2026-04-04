@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "AO3 Academic Reader",
+  "version": "1.1.4",
+  "description": "Formats AO3 works into a clean SpringerLink academic paper layout.",
+  "permissions": ["storage", "activeTab"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AO3 Academic Reader"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.archiveofourown.org/works/*"],
+      "css": ["style.css"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+/* SpringerLink Replica Layout */
+
+/* 1. Base Canvas */
+html, body {
+    background-color: #ffffff;
+    color: #222222;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. The Paper Container */
+#academic-paper-wrapper {
+    max-width: 850px; 
+    margin: 0 auto;
+    padding: 40px 20px 80px 20px;
+    font-family: "Merriweather Sans","Helvetica Neue", Helvetica, Arial;
+    font-size: 1.125rem; /* Standard Springer 18px body font */
+    line-height: 1.8;
+    box-sizing: border-box;
+}
+
+/* 3. Header Styling (Sans-Serif) */
+.academic-header {
+    margin-bottom: 32px;
+}
+
+.journal-branding {
+    font-family: "Merriweather Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    color: #6f6f6f;
+    margin-bottom: 12px;
+}
+
+.paper-title {
+    font-family: "Merriweather Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: clamp(1.75rem, 4vw, 2.25rem); /* Responsive Springer heading */
+    line-height: 1.2;
+    margin: 12px 0 16px 0;
+    font-weight: 700;
+    color: #000000;
+}
+
+.paper-authors {
+    font-family: "Merriweather Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: normal;
+    color: #025e8d; /* Springer Author Link Blue */
+    margin: 0 0 24px 0;
+}
+
+/* 4. Abstract Styling */
+.academic-abstract {
+    margin: 0 0 40px 0; 
+    padding: 0;
+}
+
+.academic-abstract h3 {
+    font-family: "Merriweather Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #222222;
+}
+
+.abstract-content {
+    font-size: 1.125rem;
+}
+
+.academic-keywords {
+    font-family: "Merriweather Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin-top: 24px;
+    font-size: 1rem;
+    color: #222222;
+}
+
+/* 5. The Main Body */
+.academic-body {
+    font-size: 1.125rem;
+}
+
+/* Springer uses heavy bottom margins instead of indents for block flow */
+.academic-body p {
+    margin: 0 0 2rem 0; 
+    text-align: left; 
+}
+
+/* Chapter Headings */
+.academic-body h3.landmark.heading {
+    font-family: "Merriweather Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    color: #222222;
+    font-weight: 700;
+    margin-top: 48px;
+    margin-bottom: 16px;
+    border: none;
+}
+
+/* Links */
+#academic-paper-wrapper a {
+    color: #025e8d;
+    text-decoration: underline 0.0625rem;
+    text-underline-offset: 0.25rem;
+}
+
+#academic-paper-wrapper a:hover {
+    text-decoration-color: transparent;
+}
+
+/* 6. Appendix / Notes */
+.academic-appendix {
+    margin-top: 48px;
+    border-top: 1px solid #d5d5d5; /* Springer note divider */
+    padding-top: 24px;
+    font-size: 1rem;
+    font-family: "Merriweather Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.academic-appendix h3 {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    font-weight: 700;
+    color: #222222;
+    margin-top: 0;
+    margin-bottom: 16px;
+}

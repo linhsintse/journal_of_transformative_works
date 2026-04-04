@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, sans-serif; padding: 15px; width: 220px; color: #222; }
+    h3 { margin-top: 0; font-size: 16px; margin-bottom: 15px; }
+    
+    button { 
+        width: 100%; padding: 10px; margin-top: 10px; border: none; 
+        cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 14px;
+    }
+    
+    #format-btn { background: #025e8d; color: white; }
+    #format-btn:hover { background: #01324b; }
+    
+    #revert-btn { background: #e5e7eb; color: #374151; margin-top: 8px;}
+    #revert-btn:hover { background: #d1d5db; }
+    
+    label { display: flex; align-items: center; cursor: pointer; font-size: 14px; margin-bottom: 10px;}
+    input { margin-right: 8px; }
+  </style>
+</head>
+<body>
+  <h3>AO3 Reader Settings</h3>
+  <label>
+    <input type="checkbox" id="auto-enable"> Auto-format on AO3
+  </label>
+  <button id="format-btn">Format as Paper</button>
+  <button id="revert-btn">Revert to AO3 Layout</button>
+  <script src="popup.js"></script>
+</body>
+</html>
