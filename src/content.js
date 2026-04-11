@@ -1,6 +1,9 @@
+// ==========================================
+// 1. CORE LOGIC
+// ==========================================
 
-async function initAcademicLayout() {
-    
+// Add themeClass as a parameter
+async function initAcademicLayout(themeClass) {
     const url = new URL(window.location.href);
     const workId = url.pathname.split('/')[2];
     const isMultiChapter = document.querySelector('.chapter.preface.group');
@@ -11,11 +14,9 @@ async function initAcademicLayout() {
     if (isMultiChapter && !isFullWorkView) {
         showLoadingState();
         try {
-            // Fetch the full work HTML in the background
             const response = await fetch(`https://archiveofourown.org/works/${workId}?view_full_work=true`);
             const htmlText = await response.text();
             
-            // Parse the returned HTML string into a virtual DOM
             const parser = new DOMParser();
             extractionDocument = parser.parseFromString(htmlText, 'text/html');
         } catch (error) {
@@ -28,7 +29,8 @@ async function initAcademicLayout() {
 
     const paperData = extractData(extractionDocument);
     
-    renderAcademicPaper(paperData);
+    // Pass the themeClass down to the renderer
+    renderAcademicPaper(paperData, themeClass);
 }
 
 function showLoadingState() {
@@ -164,6 +166,11 @@ function renderAcademicPaper(data, themeClass) {
     document.body.appendChild(masterContainer);
 }
 
+
+// ==========================================
+// 2. EXECUTION LOGIC & STATE MANAGEMENT
+// ==========================================
+
 let isFormatted = false;
 
 function triggerFormatting(themeClass) {
@@ -180,21 +187,19 @@ function revertLayout() {
 function swapTheme(newTheme) {
     const layout = document.getElementById('academic-master-layout');
     if (layout) {
-        layout.className = newTheme; // Instantly swaps the CSS context
+        layout.className = newTheme; 
     }
 }
 
+// Check auto-enable and grab the saved theme on load
 chrome.storage.sync.get({ autoEnable: false, theme: 'theme-springer' }, (result) => {
     window.currentTheme = result.theme; 
     
-    initAcademicLayout = async function() {
-       const paperData = extractData(extractionDocument);
-       renderAcademicPaper(paperData, window.currentTheme); // <--- Pass it here
-    };
-
+    // If auto-enable is true, trigger immediately with the saved theme
     if (result.autoEnable) triggerFormatting(window.currentTheme);
 });
 
+// Listen for interactions from popup.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "formatPaper") {
         chrome.storage.sync.get({ theme: 'theme-springer' }, (result) => {
@@ -206,7 +211,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({status: "success"});
     } else if (request.action === "changeTheme") {
         window.currentTheme = request.theme;
-        swapTheme(request.theme); // Live swap without reloading the page!
+        swapTheme(request.theme); // Live swap without reloading the page
         sendResponse({status: "success"});
     }
 });
