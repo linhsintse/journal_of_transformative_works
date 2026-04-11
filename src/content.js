@@ -67,32 +67,44 @@ function extractData(doc) {
     };
 }
 
-function renderAcademicPaper(data) {
+function renderAcademicPaper(data, themeClass) {
     removeLoadingState();
 
-    // The Master Layout Container
     const masterContainer = document.createElement('div');
     masterContainer.id = 'academic-master-layout';
+    const fandomElement = document.querySelector('dd.fandom a');
+    const fandom = fandomElement ? fandomElement.innerText : 'Literature';
 
+    masterContainer.className = themeClass; 
+    
     masterContainer.innerHTML = `
         <nav class="academic-top-nav">
             <div class="nav-content">
                 <div class="nav-brand">Journal of Transformative Works</div>
                 <ul class="nav-links">
-                    <li><a href="#">Browse Articles</a></li>
-                    <li><a href="#">Search Database</a></li>
-                    <li><a href="#">About the Journal</a></li>
+                    <li><a href="#">Search</a></li>
+                    <li><a href="#">Login</a></li>
                 </ul>
             </div>
         </nav>
 
         <div class="academic-grid">
-            
             <main id="academic-paper-wrapper">
+                
+                <nav class="academic-breadcrumbs">
+                    <a href="#">Home</a> <span class="separator">/</span> 
+                    <a href="#">${fandom}</a> <span class="separator">/</span> 
+                    <span class="current-page">Article</span>
+                </nav>
+
                 <header class="academic-header">
+                    <div class="content-type">Original Research</div>
                     <h1 class="paper-title">${data.title}</h1>
                     <h2 class="paper-authors">${data.authors}</h2>
-                    <div class="journal-branding">Published: ${data.publishDate} | Word Count: ${data.wordCount}</div>
+                    <div class="journal-branding">
+                        <span>Published: ${data.publishDate}</span>
+                        <span>Words: ${data.wordCount}</span>
+                    </div>
                 </header>
 
                 ${data.summary ? `
@@ -108,86 +120,93 @@ function renderAcademicPaper(data) {
 
                 ${data.notes ? `
                 <footer class="academic-appendix">
-                    <h3>Appendix / Notes</h3>
+                    <h3>Author Information & Notes</h3>
                     <div class="appendix-content">${data.notes}</div>
                 </footer>` : ''}
             </main>
 
             <aside class="academic-sidebar">
-                <div class="sidebar-block primary-actions">
-                    <button class="action-btn download-btn">Download PDF</button>
-                    <button class="action-btn cite-btn">Cite this paper</button>
+                
+                <div class="ac-button-group">
+                    <button class="ac-sidebar-btn ac-primary-btn">
+                        Download PDF 
+                        <span class="ac-btn-subtext">View offline</span>
+                    </button>
+                    <button class="ac-sidebar-btn ac-secondary-btn">Cite this paper</button>
                 </div>
 
-                <div class="sidebar-block">
-                    <h4>Article Metrics</h4>
-                    <ul class="sidebar-links">
-                        <li><a href="#">Citations (0)</a></li>
-                        <li><a href="#">Altmetric Score</a></li>
-                        <li><a href="#">Accesses (Kudos)</a></li>
-                    </ul>
+                <div class="sidebar-accordion">
+                    <div class="accordion-item">
+                        <a href="#">Sections</a>
+                    </div>
+                    <div class="accordion-item">
+                        <a href="#">Abstract</a>
+                    </div>
+                    <div class="accordion-item">
+                        <a href="#">Author information</a>
+                    </div>
+                    <div class="accordion-item">
+                        <a href="#">Rights and permissions</a>
+                    </div>
                 </div>
 
-                <div class="sidebar-block">
-                    <h4>Related Content</h4>
-                    <ul class="sidebar-links">
-                        <li><a href="#">Similar articles in this Fandom</a></li>
-                        <li><a href="#">Other works by these Authors</a></li>
-                        <li><a href="#">View Collection</a></li>
-                    </ul>
+                <div class="sidebar-block metrics-block">
+                    <h4>Metrics</h4>
+                    <div class="metric-item"><strong>0</strong> Citations</div>
+                    <div class="metric-item"><strong>${data.wordCount}</strong> Words</div>
                 </div>
             </aside>
         </div>
     `;
 
-    // Hide the original AO3 layout
     const originalBody = document.querySelector('#outer');
-    if (originalBody) {
-        originalBody.style.display = 'none'; 
-    }
-    
-    // Inject the new layout
+    if (originalBody) originalBody.style.display = 'none'; 
     document.body.appendChild(masterContainer);
 }
 
-function isPageFormatted() {
-    return document.getElementById('academic-paper-wrapper') !== null || document.getElementById('academic-loader') !== null;
-}
+let isFormatted = false;
 
-function triggerFormatting() {
-    console.log("AO3 Reader: Formatting triggered!"); // <-- Check for this in your F12 console
-    if (!isPageFormatted()) {
-        initAcademicLayout();
-    } else {
-        console.log("AO3 Reader: Page is already formatted, ignoring.");
+function triggerFormatting(themeClass) {
+    if (!isFormatted) {
+        initAcademicLayout(themeClass); 
+        isFormatted = true;
     }
 }
 
 function revertLayout() {
-    console.log("AO3 Reader: Reverting layout...");
-    // A hard reload is the safest way to guarantee a clean AO3 slate
     window.location.reload(); 
 }
 
-// 1. Check if the user wants it to run automatically on page load
-chrome.storage.sync.get({ autoEnable: false }, (result) => {
-    console.log("AO3 Reader: Auto-enable is set to " + result.autoEnable);
-    if (result.autoEnable) {
-        triggerFormatting();
+function swapTheme(newTheme) {
+    const layout = document.getElementById('academic-master-layout');
+    if (layout) {
+        layout.className = newTheme; // Instantly swaps the CSS context
     }
+}
+
+chrome.storage.sync.get({ autoEnable: false, theme: 'theme-springer' }, (result) => {
+    window.currentTheme = result.theme; 
+    
+    initAcademicLayout = async function() {
+       const paperData = extractData(extractionDocument);
+       renderAcademicPaper(paperData, window.currentTheme); // <--- Pass it here
+    };
+
+    if (result.autoEnable) triggerFormatting(window.currentTheme);
 });
 
-// 2. Listen for a manual click from the popup menu
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log("AO3 Reader: Received message from popup -", request.action);
-    
-    if (request.action === "checkState") {
-        sendResponse({ isFormatted: isPageFormatted() });
-    } else if (request.action === "formatPaper") {
-        triggerFormatting();
+    if (request.action === "formatPaper") {
+        chrome.storage.sync.get({ theme: 'theme-springer' }, (result) => {
+            triggerFormatting(result.theme);
+        });
         sendResponse({status: "success"});
     } else if (request.action === "revertPaper") {
         revertLayout();
+        sendResponse({status: "success"});
+    } else if (request.action === "changeTheme") {
+        window.currentTheme = request.theme;
+        swapTheme(request.theme); // Live swap without reloading the page!
         sendResponse({status: "success"});
     }
 });

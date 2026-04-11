@@ -1,47 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
     const checkbox = document.getElementById('auto-enable');
+    const themeSelect = document.getElementById('theme-select');
     const formatBtn = document.getElementById('format-btn');
     const revertBtn = document.getElementById('revert-btn');
 
-    chrome.storage.sync.get({ autoEnable: false }, (result) => {
+    // Load saved preferences
+    chrome.storage.sync.get({ autoEnable: false, theme: 'theme-springer' }, (result) => {
         checkbox.checked = result.autoEnable;
+        themeSelect.value = result.theme;
     });
 
+    // Save preferences when changed
     checkbox.addEventListener('change', () => {
         chrome.storage.sync.set({ autoEnable: checkbox.checked });
     });
 
-    async function sendActionToTab(actionName) {
+    themeSelect.addEventListener('change', () => {
+        const selectedTheme = themeSelect.value;
+        chrome.storage.sync.set({ theme: selectedTheme });
+        
+        // If the user changes the dropdown, auto-update the page instantly
+        sendActionToTab("changeTheme", { theme: selectedTheme });
+    });
+
+    async function sendActionToTab(actionName, payload = {}) {
         try {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            
-            if (tab && tab.url && tab.url.includes("archiveofourown.org/works/")) {
-                // 1. Ask the content script for its current formatting state
-                chrome.tabs.sendMessage(tab.id, { action: "checkState" }, (stateResponse) => {
-                    if (chrome.runtime.lastError) {
-                        console.error("Connection failed. Did you refresh the AO3 tab?", chrome.runtime.lastError);
-                        alert("Cannot connect to the page. Please refresh the AO3 tab and try again.");
-                        return;
+            if (tab && tab.url.includes("archiveofourown.org/works/")) {
+                chrome.tabs.sendMessage(tab.id, { action: actionName, ...payload }, (response) => {
+                    if (!chrome.runtime.lastError && actionName !== "changeTheme") {
+                        window.close(); // Only close popup on format/revert clicks
                     }
-
-                    // 2. Test if the action is valid based on the current state
-                    const isFormatted = stateResponse && stateResponse.isFormatted;
-                    
-                    if (actionName === "formatPaper" && isFormatted) {
-                        alert("The page is already formatted!");
-                        return; 
-                    }
-                    if (actionName === "revertPaper" && !isFormatted) {
-                        alert("The page is already in its normal state.");
-                        return; 
-                    }
-
-                    // 3. Send the actual action and close the popup menu
-                    chrome.tabs.sendMessage(tab.id, { action: actionName }, (response) => {
-                        window.close();
-                    });
                 });
-            } else {
+            } else if (actionName !== "changeTheme") {
                 alert("This extension only works on an AO3 story page.");
             }
         } catch (error) {
