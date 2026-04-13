@@ -1,5 +1,5 @@
 /* =========================================
-   1. GLOBAL CANVAS & MASTER LAYOUT
+   1. GLOBAL CANVAS & THREE-TIER HEADER
    ========================================= */
 
 body {
@@ -9,83 +9,198 @@ body {
     display: block; 
 }
 
-/* The Top Navigation Bar */
-.academic-top-nav {
-    background-color: #1f2937;
+/* Tier 1: Master Publisher Nav */
+.academic-master-nav {
+    background-color: #1a1a1a; 
     color: white;
+    font-size: 1.5rem;
     width: 100%;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.nav-content {
-    max-width: 1200px;
+.academic-master-nav .nav-content {
+    max-width: 1800px;
     margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* Left, Center, Right columns */
     align-items: center;
-    padding: 12px 24px;
+    padding: 8px 24px;
 }
 
-.nav-brand {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight: 700;
-    font-size: 1.2rem;
+.master-brand {
+    grid-column: 2; /* Place in the center column */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
 }
 
-.nav-links {
+.brand-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.academic-master-nav .nav-links {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
-    gap: 24px;
+    grid-column: 3; /* Place in the right column */
+    justify-self: end; /* Align to the far right */
+    gap: 20px;
 }
 
-.nav-links a {
-    color: #e5e7eb;
+.academic-master-nav .nav-links a {
+    color: #cccccc;
     text-decoration: none;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 0.95rem;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    font-size: 0.85rem;
     font-weight: 600;
 }
 
-.nav-links a:hover {
+.academic-master-nav .nav-links a:hover {
     color: #ffffff;
-    text-decoration: underline;
 }
 
-/* The Grid Layout */
-.academic-grid {
-    max-width: 1200px; 
-    margin: 40px auto;
+/* Tier 2: Journal Brand Header */
+.academic-journal-brand-header {
+    background-color: #ffffff;
+    width: 100%;
+    padding: 40px 0 30px 0; 
+}
+
+.journal-brand-content {
+    max-width: 1800px;
+    margin: 0 auto;
     padding: 0 24px;
-    display: grid;
-    grid-template-columns: 1fr 300px; 
-    gap: 40px; 
-    align-items: start; 
+}
+
+.journal-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.journal-main-title {
+    font-family: Merriweather, Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: #222222;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* Tier 3: Journal Sub-Navigation (The Grey Bar) */
+.academic-journal-subnav {
+    background-color: #f8f9fa; 
+    width: 100%;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.subnav-content {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.subnav-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 30px;
+    overflow-x: auto; 
+}
+
+.subnav-links li {
+    display: flex;
+}
+
+.subnav-links a {
+    color: #222222;
+    text-decoration: none;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    padding: 16px 0; 
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.subnav-links a:hover {
+    color: #0050aa;
+}
+
+.subnav-links a.active-link {
+    color: #0050aa;
+    font-weight: 700;
+    border-bottom: 2px solid #0050aa;
 }
 
 
 /* =========================================
-   2. MAIN PAPER CONTENT (LEFT COLUMN)
+   2. MAIN PAPER CONTENT & GRID
    ========================================= */
+
+/* The Grid Layout */
+.academic-grid {
+    max-width: 1800px; 
+    margin: 40px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px; 
+    gap: 40px; 
+    align-items: start; 
+}
 
 #academic-paper-wrapper {
     background-color: #ffffff;
-    padding: 60px 80px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    padding: clamp(30px, 5vw, 60px) clamp(40px, 6vw, 80px) !important; 
+    box-shadow: none !important; 
     font-family: Merriweather, Georgia, serif; 
-    font-size: 1.0rem;
+    font-size: 1.125rem;
     line-height: 1.8;
-    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
     color: #222222;
+}
+
+/* THE NUKE: Overrides AO3's native reading-width limits inside the injected HTML */
+#academic-paper-wrapper .academic-header,
+#academic-paper-wrapper .academic-abstract,
+#academic-paper-wrapper .academic-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Unlocks the specific AO3 text containers that carry over with the extraction */
+.academic-body .userstuff,
+.academic-body div[role="article"],
+.academic-body #chapters {
+    width: 100% !important;
+    max-width: none !important; 
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.academic-body img {
+    max-width: 100% !important;
+    height: auto !important;
 }
 
 /* Breadcrumbs */
 .academic-breadcrumbs {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
     font-size: 0.85rem;
     color: #666;
     margin-bottom: 20px;
@@ -108,9 +223,9 @@ body {
 
 /* Header UI */
 .content-type {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
     text-transform: uppercase;
-    font-size: 0.55rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #333;
     letter-spacing: 0.5px;
@@ -118,7 +233,7 @@ body {
 }
 
 .paper-title {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
     font-size: clamp(1.75rem, 4vw, 2.25rem); 
     line-height: 1.2;
     margin: 0 0 16px 0;
@@ -127,15 +242,23 @@ body {
 }
 
 .paper-authors {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    text-decoration: underline 0.0625rem;
     font-size: 1rem;
     font-weight: normal;
     color: #0050aa; 
-    margin: 0 0 24px 0;
+    margin: 0 0 12px 0;
+}
+
+.paper-date {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    font-size: 0.95rem;
+    color: #444444;
+    margin: 0 0 12px 0;
 }
 
 .journal-branding {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
     font-size: 0.9rem;
     color: #6f6f6f;
     margin-top: 24px;
@@ -152,7 +275,7 @@ body {
 }
 
 .academic-abstract h3 {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
     font-size: 1.25rem;
     font-weight: 700;
     margin-top: 0;
@@ -160,19 +283,24 @@ body {
 }
 
 .academic-keywords {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
     margin-top: 24px;
     font-size: 1rem;
 }
 
 /* The Body Text */
+.academic-body .preface.group .title,
+.academic-body .preface.group .byline {
+    display: none !important; /* Hides the duplicated native AO3 title and author */
+}
+
 .academic-body p {
     margin: 0 0 2rem 0; 
     text-align: left; 
 }
 
 .academic-body h3.landmark.heading {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
     font-size: 1.5rem;
     color: #222222;
     font-weight: 700;
@@ -192,7 +320,7 @@ body {
     margin-top: 48px;
     border-top: 1px solid #d5d5d5;
     padding-top: 24px;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
     font-size: 1rem;
 }
 
@@ -204,11 +332,15 @@ body {
 }
 
 
+/* =========================================
+   3. THE SIDEBAR (RIGHT COLUMN)
+   ========================================= */
 
 .academic-sidebar {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 
+/* Namespaced Sidebar Buttons */
 .ac-button-group {
     display: flex;
     flex-direction: column;
@@ -224,7 +356,7 @@ body {
     box-sizing: border-box !important;
     width: 100% !important;
     padding: 14px 16px !important;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif !important;
     font-size: 1rem !important;
     font-weight: 700 !important;
     text-align: left !important;
@@ -261,6 +393,7 @@ body {
     background-color: #f0f6fc !important;
 }
 
+/* Accordion Nav */
 .sidebar-accordion {
     border-top: 1px solid #e0e0e0;
     margin-bottom: 30px;
@@ -316,9 +449,6 @@ body {
         grid-template-columns: 1fr; 
     }
     #academic-paper-wrapper {
-        padding: 40px 30px;
-    }
-    .nav-links {
-        display: none; 
+        padding: 40px 30px !important;
     }
 }

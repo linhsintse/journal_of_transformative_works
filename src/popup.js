@@ -26,9 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function sendActionToTab(actionName, payload = {}) {
         try {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            if (tab && tab.url.includes("archiveofourown.org/works/")) {
+            if (tab && tab.url && tab.url.includes("archiveofourown.org/works/")) {
                 chrome.tabs.sendMessage(tab.id, { action: actionName, ...payload }, (response) => {
-                    if (!chrome.runtime.lastError && actionName !== "changeTheme") {
+                    if (chrome.runtime.lastError) {
+                        // If the page is still loading, give the user visual feedback
+                        const btn = actionName === "formatPaper" ? formatBtn : revertBtn;
+                        const originalText = btn.innerText;
+                        btn.innerText = "Loading... Try again";
+                        setTimeout(() => { btn.innerText = originalText; }, 1500);
+                    } else if (actionName !== "changeTheme") {
                         window.close(); // Only close popup on format/revert clicks
                     }
                 });

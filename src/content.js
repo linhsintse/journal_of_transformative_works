@@ -27,7 +27,7 @@ async function initAcademicLayout(themeClass) {
         }
     }
 
-    const paperData = extractData(extractionDocument);
+    const paperData = extractData(extractionDocument, workId);
     
     // Pass the themeClass down to the renderer
     renderAcademicPaper(paperData, themeClass);
@@ -50,7 +50,7 @@ function removeLoadingState() {
     if (loader) loader.remove();
 }
 
-function extractData(doc) {
+function extractData(doc, workId) {
     const getHTML = (selector) => doc.querySelector(selector)?.innerHTML || '';
     const getText = (selector) => doc.querySelector(selector)?.textContent?.trim() || '';
     
@@ -60,6 +60,7 @@ function extractData(doc) {
     return {
         title: getText('h2.title.heading'),
         authors: getText('h3.byline.heading') || 'Anonymous',
+        workindex: workId,
         summary: getHTML('.summary.module blockquote.userstuff'),
         keywords: keywords || 'No keywords provided.',
         publishDate: getText('dd.published'),
@@ -80,15 +81,43 @@ function renderAcademicPaper(data, themeClass) {
     masterContainer.className = themeClass; 
     
     masterContainer.innerHTML = `
-        <nav class="academic-top-nav">
+        <nav class="academic-master-nav">
             <div class="nav-content">
-                <div class="nav-brand">Journal of Transformative Works</div>
+                <div class="master-brand">
+                    <svg class="brand-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4 22v-2h16v2H4Zm4-4V6H6v12h2Zm4 0V6h-2v12h2Zm4 0V6h-2v12h2Zm4 0V6h-2v12h2ZM2 4v2h20V4L12 0 2 4Z"/>
+                    </svg>
+                    <strong>Archive</strong> Online Library
+                </div>
                 <ul class="nav-links">
                     <li><a href="#">Search</a></li>
-                    <li><a href="#">Login</a></li>
+                    <li><a href="#">Cart</a></li>
+                    <li><a href="#">Log in</a></li>
                 </ul>
             </div>
         </nav>
+
+        <header class="academic-journal-brand-header">
+            <div class="journal-brand-content">
+                <div class="journal-title-wrapper">
+                    <h1 class="journal-main-title">Journal of Transformative Works</h1>
+                </div>
+            </div>
+        </header>
+
+        <nav class="academic-journal-subnav">
+            <div class="subnav-content">
+                <ul class="subnav-links">
+                    <li><a href="#" class="active-link">Journal home</a></li>
+                    <li><a href="#">Submission guidelines</a></li>
+                    <li><a href="#">Collections</a></li>
+                    <li><a href="#">Call for papers</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="academic-grid">
 
         <div class="academic-grid">
             <main id="academic-paper-wrapper">
@@ -100,12 +129,12 @@ function renderAcademicPaper(data, themeClass) {
                 </nav>
 
                 <header class="academic-header">
-                    <div class="content-type">Original Research</div>
+                    <div class="content-type">Original Research  |  <span style="color: #2e7d32;">Open Access</span></div>
                     <h1 class="paper-title">${data.title}</h1>
-                    <h2 class="paper-authors">${data.authors}</h2>
+                    <h2 class="paper-authors">${data.authors} et al.</h2>
+                    <div class="paper-date">First Published: ${data.publishDate}  |  <a href="https://doi.org/${data.workindex}">https://doi.org/${data.workindex}</a></div>
                     <div class="journal-branding">
-                        <span>Published: ${data.publishDate}</span>
-                        <span>Words: ${data.wordCount}</span>
+                        <span></span>
                     </div>
                 </header>
 
@@ -207,8 +236,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         sendResponse({status: "success"});
     } else if (request.action === "revertPaper") {
-        revertLayout();
         sendResponse({status: "success"});
+            setTimeout(() => revertLayout(), 50); // Small delay to let the response send cleanly
     } else if (request.action === "changeTheme") {
         window.currentTheme = request.theme;
         swapTheme(request.theme); // Live swap without reloading the page
