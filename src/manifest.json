@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AO3 Academic Reader",
-  "version": "1.5",
+  "version": "1.0.0",
   "description": "Formats AO3 works into Academic or Wikipedia layouts.",
   "permissions": ["storage", "activeTab"],
   "action": {
@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "matches": ["*://*.archiveofourown.org/works/*"],
-      "css": ["academic-style.css"],
+      "css": ["academic-style.css", "paper-style.css"],
       "js": ["content.js"],
       "run_at": "document_end"
     }
