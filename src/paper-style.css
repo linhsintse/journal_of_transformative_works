@@ -1,148 +1,99 @@
-/* =========================================
-   TWO-COLUMN PDF VIEWER THEME
-   ========================================= */
-
-/* 1. Global Reset & Viewer Background */
-.theme-pdf {
-    background-color: #525659; /* Chrome PDF Viewer Gray */
+/* 1. PDF Viewer Environment */
+.theme-paper {
+    background-color: #525659; /* Standard Chrome PDF viewer gray */
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
-/* 2. Mock PDF Toolbar (Fixed at the top) */
-.theme-pdf .pdf-viewer-toolbar {
+/* 2. Mock Toolbar */
+.theme-paper .pdf-viewer-toolbar {
     background-color: #323639;
-    color: white;
+    color: #f1f1f1;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    height: 50px;
+    padding: 10px 20px;
+    font-family: sans-serif;
+    font-size: 0.9rem;
     position: sticky;
     top: 0;
     z-index: 9999;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    font-size: 0.9rem;
 }
 
-.theme-pdf .toolbar-left {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 300px;
-}
-
-.theme-pdf .toolbar-center {
-    display: flex;
-    gap: 20px;
-    color: #cccccc;
-}
-
-.theme-pdf .mock-btn {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-.theme-pdf .mock-btn:hover {
-    background: rgba(255,255,255,0.1);
-    border-radius: 50%;
-}
-
-/* 3. The Canvas (The gray area behind the paper) */
-.theme-pdf .pdf-viewer-canvas {
+/* 3. The Canvas Background */
+.theme-paper .pdf-viewer-canvas {
     padding: 40px 20px;
     display: flex;
     justify-content: center;
 }
 
-/* 4. The Physical Paper Sheet */
-.theme-pdf .pdf-physical-page {
+/* 4. The Physical Paper Constraints */
+.theme-paper .pdf-physical-page {
     background-color: #ffffff;
     width: 100%;
-    max-width: 8.5in; /* Standard physical Letter dimensions */
-    padding: 1in; /* Traditional 1-inch print margins */
+    max-width: 8.5in; 
+    padding: 1in; 
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); 
     color: #000000;
     box-sizing: border-box;
 }
 
-/* 5. Typography & Headers */
-.theme-pdf .pdf-header {
+/* 5. Print Typography */
+.theme-paper .pdf-title {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24pt;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.theme-paper .pdf-authors {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14pt;
     text-align: center;
     margin-bottom: 30px;
 }
 
-.theme-pdf .pdf-title {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 24pt;
-    margin: 0 0 15px 0;
-    line-height: 1.1;
-}
-
-.theme-pdf .pdf-authors {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 14pt;
-    font-style: italic;
-    margin: 0;
-}
-
-/* Abstract across the top */
-.theme-pdf .pdf-abstract-span {
+.theme-paper .pdf-abstract {
     margin: 0 0.5in 30px 0.5in;
     font-family: "Times New Roman", Times, serif;
     font-size: 10pt;
-    line-height: 1.4;
     text-align: justify;
 }
 
-/* 6. The Two-Column Engine */
-.theme-pdf .pdf-two-column-body {
+/* 6. Two-Column Engine & AO3 Overrides */
+.theme-paper .pdf-two-column-body {
     column-count: 2;
-    column-gap: 0.4in; /* Standard print column gutter */
+    column-gap: 0.4in;
     text-align: justify;
     hyphens: auto; 
     font-family: "Times New Roman", Times, serif;
-    font-size: 11pt; /* Print standard font size */
+    font-size: 11pt; 
     line-height: 1.35;
 }
 
-/* 7. PDF Internal Constraints (Defeating AO3 limits again) */
-.theme-pdf .pdf-two-column-body .userstuff,
-.theme-pdf .pdf-two-column-body div[role="article"] {
+.theme-paper .pdf-two-column-body .userstuff,
+.theme-paper .pdf-two-column-body div[role="article"] {
     width: 100% !important;
     max-width: none !important;
     padding: 0 !important;
 }
 
-/* Print paragraphs use first-line indents, no bottom margin */
-.theme-pdf .pdf-two-column-body p {
+.theme-paper .pdf-two-column-body p {
     margin: 0 !important; 
     text-indent: 0.25in; 
 }
 
-.theme-pdf .pdf-two-column-body > p:first-of-type,
-.theme-pdf .pdf-two-column-body .userstuff > p:first-of-type {
+.theme-paper .pdf-two-column-body > p:first-of-type,
+.theme-paper .pdf-two-column-body .userstuff > p:first-of-type {
     text-indent: 0;
 }
 
-/* Chapter Headings break the columns */
-.theme-pdf .pdf-two-column-body h3.landmark.heading {
+.theme-paper .pdf-two-column-body h3.landmark.heading {
     column-span: all;
     font-size: 14pt;
     text-align: left;
     margin-top: 24pt;
     margin-bottom: 12pt;
-    font-weight: bold;
     border: none;
-}
-
-.theme-pdf .pdf-two-column-body img {
-    max-width: 100% !important;
-    height: auto !important;
 }

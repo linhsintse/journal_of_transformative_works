@@ -1,9 +1,10 @@
 // ==========================================
-// 1. CORE LOGIC
+// 1. CORE LOGIC & EXTRACTION
 // ==========================================
 
-// Add themeClass as a parameter
-async function initAcademicLayout(themeClass) {
+let globalPaperData = null; // Store data so we can swap layouts instantly
+
+async function initializeReaderLayout(themeClass) {
     const url = new URL(window.location.href);
     const workId = url.pathname.split('/')[2];
     const isMultiChapter = document.querySelector('.chapter.preface.group');
@@ -27,10 +28,11 @@ async function initAcademicLayout(themeClass) {
         }
     }
 
-    const paperData = extractData(extractionDocument, workId);
+    // Pass the workId into your custom extractor
+    globalPaperData = extractData(extractionDocument, workId);
     
-    // Pass the themeClass down to the renderer
-    renderAcademicPaper(paperData, themeClass);
+    // Send data to the router instead of directly rendering
+    applyThemeLayout(globalPaperData, themeClass);
 }
 
 function showLoadingState() {
@@ -50,6 +52,7 @@ function removeLoadingState() {
     if (loader) loader.remove();
 }
 
+// Your updated extraction logic
 function extractData(doc, workId) {
     const getHTML = (selector) => doc.querySelector(selector)?.innerHTML || '';
     const getText = (selector) => doc.querySelector(selector)?.textContent?.trim() || '';
@@ -70,7 +73,76 @@ function extractData(doc, workId) {
     };
 }
 
-function renderAcademicPaper(data, themeClass) {
+
+// ==========================================
+// 2. THE ROUTER & RENDERERS
+// ==========================================
+
+function applyThemeLayout(data, themeClass) {
+    // Clear any existing layouts before drawing a new one
+    const existingWebLayout = document.getElementById('academic-master-layout');
+    const existingPdfLayout = document.getElementById('pdf-master-layout');
+    
+    if (existingWebLayout) existingWebLayout.remove();
+    if (existingPdfLayout) existingPdfLayout.remove();
+
+    // Route to the correct DOM builder based on the dropdown selection
+    if (themeClass === 'theme-springer' && document.getElementById('theme-select')?.value === 'theme-paper' || themeClass === 'theme-paper') {
+        renderPDFLayout(data, themeClass);
+    } else {
+        renderWebLayout(data, themeClass); 
+    }
+}
+
+// THE PDF RENDERER (Physical Page Look)
+function renderPDFLayout(data, themeClass) {
+    removeLoadingState();
+
+    const pdfContainer = document.createElement('div');
+    pdfContainer.id = 'pdf-master-layout';
+    pdfContainer.className = themeClass;
+
+    pdfContainer.innerHTML = `
+        <div class="pdf-viewer-toolbar">
+            <div class="toolbar-left">${data.title}.pdf</div>
+            <div class="toolbar-center">
+                <span class="page-count">1 / 1</span>
+                <span class="zoom-level">100%</span>
+            </div>
+            <div class="toolbar-right">
+                <button class="mock-btn">⬇</button>
+                <button class="mock-btn">🖨</button>
+            </div>
+        </div>
+
+        <div class="pdf-viewer-canvas">
+            <div class="pdf-physical-page">
+                <header class="pdf-header">
+                    <h1 class="pdf-title">${data.title}</h1>
+                    <h2 class="pdf-authors">${data.authors} et al.</h2>
+                </header>
+
+                ${data.summary ? `
+                <div class="pdf-abstract-span">
+                    <strong>Abstract:</strong>
+                    <div class="abstract-text">${data.summary}</div>
+                </div>` : ''}
+
+                <div class="pdf-two-column-body">
+                    ${data.text}
+                </div>
+            </div>
+        </div>
+    `;
+
+    const originalBody = document.querySelector('#outer');
+    if (originalBody) originalBody.style.display = 'none'; 
+    document.body.appendChild(pdfContainer);
+}
+
+
+// THE WEB RENDERER (Your exact layout with the Open Access & DOI logic)
+function renderWebLayout(data, themeClass) {
     removeLoadingState();
 
     const masterContainer = document.createElement('div');
@@ -116,8 +188,6 @@ function renderAcademicPaper(data, themeClass) {
                 </ul>
             </div>
         </nav>
-
-        <div class="academic-grid">
 
         <div class="academic-grid">
             <main id="academic-paper-wrapper">
@@ -197,14 +267,14 @@ function renderAcademicPaper(data, themeClass) {
 
 
 // ==========================================
-// 2. EXECUTION LOGIC & STATE MANAGEMENT
+// 3. EXECUTION LOGIC & STATE MANAGEMENT
 // ==========================================
 
 let isFormatted = false;
 
 function triggerFormatting(themeClass) {
     if (!isFormatted) {
-        initAcademicLayout(themeClass); 
+        initializeReaderLayout(themeClass); 
         isFormatted = true;
     }
 }
@@ -214,9 +284,9 @@ function revertLayout() {
 }
 
 function swapTheme(newTheme) {
-    const layout = document.getElementById('academic-master-layout');
-    if (layout) {
-        layout.className = newTheme; 
+    window.currentTheme = newTheme;
+    if (isFormatted && globalPaperData) {
+        applyThemeLayout(globalPaperData, newTheme); 
     }
 }
 
@@ -237,7 +307,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({status: "success"});
     } else if (request.action === "revertPaper") {
         sendResponse({status: "success"});
-            setTimeout(() => revertLayout(), 50); // Small delay to let the response send cleanly
+        setTimeout(() => revertLayout(), 50); // Your custom delay implementation
     } else if (request.action === "changeTheme") {
         window.currentTheme = request.theme;
         swapTheme(request.theme); // Live swap without reloading the page
